@@ -17,41 +17,6 @@ class Cliente():
         self.email = email
         self.instancias = instancias
     
-    # def getNIT (self):
-    #     return self.nit 
-    
-    # def setNIT (self, nit):
-    #     self.nit = nit
-    
-    # def getnombre (self):
-    #     return self.nombre 
-    
-    # def setnombre (self, nombre):
-    #     self.nombre = nombre
-    
-    # def getusuario (self):
-    #     return self.usuario 
-    
-    # def setusuario (self, usuario):
-    #     self.usuario = usuario
-    
-    # def getcontra (self):
-    #     return self.contra 
-    
-    # def setcontra (self, contra):
-    #     self.contra = contra
-    
-    # def getdireccion (self):
-    #     return self.contra 
-    
-    # def setdireccion (self, direccion):
-    #     self.direccion = direccion
-    
-    # def getemail (self):
-    #     return self.email 
-    
-    # def setemail (self, email):
-    #     self.email = email
 
 class Consumo():
     nit_cliente = ""
@@ -97,23 +62,6 @@ class Configuracion():
         self.descripcion =descripcion
         self.recursos = recursos
     
-    # def get_id (self):
-    #     return self.id 
-    
-    # def set_id (self, id):
-    #     self.id = id
-    
-    # def get_nombre (self):
-    #     return self.nombre 
-    
-    # def set_nombre (self, nombre):
-    #     self.nombre = nombre
-    
-    # def get_descripcion (self):
-    #     return self.descripcion 
-    
-    # def set_descripcion (self, descripcion):
-    #     self.descripcion = descripcion
 
 
 class Categoria():
@@ -131,33 +79,6 @@ class Categoria():
         self.carga = carga
         self.configs = configs
     
-    
-    # def getid (self):
-    #     return self.id 
-    
-    # def setid (self, id):
-    #     self.id = id
-    
-    # def getnombre (self):
-    #     return self.nombre 
-    
-    # def setnombre (self, nombre):
-    #     self.nombre = nombre
-    
-    # def getdescripcion (self):
-    #     return self.descripcion 
-    
-    # def setdescripcion (self, descripcion):
-    #     self.descripcion = descripcion
-    
-    # def getcarga (self):
-    #     return self.carga 
-    
-    # def setcarga (self, carga):
-    #     self.carga = carga
-
-
-
 
 class Instancia():
     idI = ""
@@ -176,38 +97,3 @@ class Instancia():
         self.fecha2 = fecha2
         self.estado = estado
 
-    # def getidI (self):
-    #     return self.idI 
-    
-    # def setidI (self, idI):
-    #     self.idI = idI
-    
-    # def getidC (self):
-    #     return self.idC 
-    
-    # def setidC (self, idC):
-    #     self.idC = idC
-        
-    # def getnombre (self):
-    #     return self.nombre 
-    
-    # def setnombre(self, nombre):
-    #     self.nombre = nombre
-    
-    # def getfecha1 (self):
-    #     return self.fecha1 
-    
-    # def setfecha1 (self, fecha1):
-    #     self.fecha1 = fecha1
-    
-    # def getfecha2 (self):
-    #     return self.fecha2 
-    
-    # def setfecha2 (self, fecha2):
-    #     self.fecha2 = fecha2
-    
-    # def getestado (self):
-    #     return self.estado 
-    
-    # def setestado (self, estado):
-    #     self.estado = estado
