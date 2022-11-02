@@ -32,18 +32,18 @@ class Consumo():
 
 
 class Recurso():
-    id_recurso = ""
-    nombre_recurso = ""
+    id = ""
+    nombre = ""
     metrica = ""
     tipo = ""
     costo = float
-    abreviatura_recurso = ""
+    abreviatura = ""
     
 
-    def __init__(self,id_recurso,nombre_recurso,abreviatura_recurso,metrica,tipo,costo):
-        self.id_recurso=id_recurso
-        self.nombre_recurso = nombre_recurso
-        self.abreviatura_recurso =abreviatura_recurso
+    def __init__(self,id,nombre,abreviatura,metrica,tipo,costo):
+        self.id=id
+        self.nombre = nombre
+        self.abreviatura =abreviatura
         self.metrica =metrica
         self.tipo = tipo
         self.costo = costo
