@@ -1,4 +1,7 @@
 from cgitb import reset
+from ctypes import resize
+from os import TMP_MAX
+from re import I
 from shlex import join
 from turtle import clearstamp
 from flask import Flask, request,jsonify
@@ -265,8 +268,8 @@ def cargarConsumos():
     datos = request.get_data()
     cons =  minidom.parseString(datos)
     
-    global Conss
-    Conss=[]
+    global Cons
+    Cons=[]
     consumos = cons.getElementsByTagName('listadoConsumos')[0]
     consum = consumos.getElementsByTagName('consumo')
     count_consumos = 0
@@ -278,7 +281,7 @@ def cargarConsumos():
         fechaHora = i.getElementsByTagName('fechaHora')[0]
         cns = Consumo(cliente_nit,instance_id,tiempo_consum.firstChild.data,fechaHora.firstChild.data)
         
-        Conss.append(cns)
+        Cons.append(cns)
     
     Dato ={
         'Información': 'Se leyó el archivo correctamente',
@@ -297,20 +300,20 @@ def cargarConsumosDB():
     datos = open('backend/consumos.xml')
     cons =  minidom.parse(datos)
     
-    global Conss
-    Conss=[]
+    global Cons
+    Cons=[]
     consumos = cons.getElementsByTagName('listadoConsumos')[0]
     consum = consumos.getElementsByTagName('consumo')
     count_consumos = 0
     for i in consum:
         count_consumos += 1
-        cliente_nit = i.attributes['nitCliente'].value
-        instance_id = i.attributes['idInstancia'].value
+        nit = i.attributes['nitCliente'].value
+        id = i.attributes['idInstancia'].value
         tiempo_consum = i.getElementsByTagName('tiempo')[0]
         fechaHora = i.getElementsByTagName('fechaHora')[0]
-        cns = Consumo(cliente_nit,instance_id,tiempo_consum.firstChild.data,fechaHora.firstChild.data)
+        cns = Consumo(nit,id,tiempo_consum.firstChild.data,fechaHora.firstChild.data)
         
-        Conss.append(cns)
+        Cons.append(cns)
     
     Dato ={
         'Información': 'Se leyó el archivo correctamente',
@@ -354,7 +357,7 @@ def consultarCategorias():
             'Nombre':c.nombre,
             'descripcion':c.descripcion,
             'carga':c.carga,
-            'lista de configuraciones': configs, 
+            'lista configuraciones': configs, 
         }
         
         ct.append(Dato)
@@ -426,6 +429,26 @@ def consultarClientes():
 
 
 
+@app.route("/consultarInstancias", methods=['GET'])
+def consultarInstancias():
+    
+    instancias = []
+    for j in Clt:
+        for i in j.instancias:
+            
+            list_inst ={
+                'Id':i.idI,
+                'Id de configuracion':i.idC,
+                'nombre':i.nombre,
+                'fecha_inicio':i.fecha1,
+                'fecha_final':i.fecha2,
+                'estado_instancia':i.estado 
+            }
+            instancias.append(list_inst)
+        
+    res = jsonify(instancias)
+    return (res)
+
 
 @app.route("/consultarRecursos", methods=['GET'])
 def consultarRecursos():
@@ -449,7 +472,25 @@ def consultarRecursos():
 
 @app.route("/crearRecurso", methods=['POST'])
 def crearRecurso():
-    pass
+    
+    
+    recurso = request.get_json()
+    
+    id = recurso['id']
+    nombre = recurso['nombre']
+    abreviatura = recurso['abreviatura']
+    metrica = recurso['metrica']
+    tipo = recurso['tipo']
+    costo = recurso['costo']
+    
+    tmp = Recurso(id,nombre,abreviatura, metrica, tipo,costo)
+    Rec.append(tmp)
+    
+    Dato = {
+                'info': 'Se agregó un recurso',
+            }
+    res = jsonify(Dato)
+    return (res)
 
 
 
@@ -472,8 +513,8 @@ def crearCategoria():
             listconf.append(i)
             break
     
-    no = Categoria(id,nombre,descripcion, carga,listconf)
-    Cat.append(no)
+    tmp = Categoria(id,nombre,descripcion, carga,listconf)
+    Cat.append(tmp)
     Dato = {
             'info': 'Se agregó una categoría',
             }
@@ -485,19 +526,180 @@ def crearCategoria():
 
 @app.route("/crearConfiguracion", methods=['POST'])
 def crearConfiguracion():
-    pass
+    configuracion = request.get_json()    
+    id = configuracion['id']
+    nombre = configuracion['nombre']
+    descripcion= configuracion['descripcion']
+    recursos = configuracion['recursos']
+    
+    recs =[]
+    for i in recursos:
+        Dato_rec ={
+            'id del recurso':recursos['id'],
+            'cantidad':recursos['cantidad'],         
+        }
+        recs.append(Dato_rec)           
+    
+    nuevaConfig = Configuracion(id,nombre,descripcion,recs)
+    cfgs1.append(nuevaConfig)
+    
+    Dato = {
+                'info': 'Se agregó una configuración'
+            }
+    respuesta = jsonify(Dato)
+    return (respuesta) 
 
 
 
 
 @app.route("/crearCliente", methods=['POST'])
 def crearCliente():
-    pass
+    c = request.get_json()
+    
+    nit = c['nit']
+    nombre = c['nombre']
+    user = c['user']
+    password = c['password']
+    direccion = c['direccion']
+    email = c['email']
+    instancias = c['instancias']
+    
+    listinst = []
+    
+    for i in Ins:
+        if instancias['id'] == i.idI:
+            listinst.append(i)
+            break
+    
+    tmp = Cliente(nit,nombre,user, password,direccion,email,listinst)
+    Clt.append(tmp)
+    Dato = {
+            'info': 'Se agregó un cliente'
+            }
+    respuesta = jsonify(Dato)
+    return (respuesta)
+
+
+
 
 
 @app.route("/crearInstancia", methods=['POST'])
 def crearInstancia():
-    pass
+    i = request.get_json()
+    
+    id = i['id']
+    configuracion = i['id_config']
+    nombre = i['nombre']
+    fecha1 = i['fecha']
+    fecha2 = '--'
+    estado = i['estado']
+    
+    tmp = Instancia(id,configuracion,nombre,fecha1,fecha2,estado)
+    Ins.append(tmp)
+    
+    Dato = {
+                'info': 'Se agregó una instancia'
+            }
+    respuesta = jsonify(Dato)
+    return (respuesta)
+
+
+
+
+@app.route("/generarFactura", methods=['POST'])
+def generarFactura():
+    cost =0
+    consclt = []
+    cst =[]
+    consin =[]
+    val = False
+    
+    tmp = request.get_json()
+    nit2 = tmp['nit_cliente']
+    
+
+    for i in Cons:
+        if i.nit == nit2:
+            val = True
+            instancia = i.id
+            tiempo =i.tiempo
+            fecha = i.fecha
+            
+            datos ={
+                'instancia': instancia,
+                'tiempo': tiempo,
+                'fecha_hora': fecha
+            }
+            consclt.append(datos)
+        
+    if val == False:
+        dato={
+            'info': 'No existe consumo'
+        }
+        res = jsonify(dato)
+        return (res)    
+
+    for i in Clt:
+        if i.nit == nit2:
+            nombre = i.nombre
+    
+    for i in consclt:
+        tiempo = i['tiempo']
+        fecha_hora  = i['fecha_hora']
+        csttot = 0
+        
+        for j in Ins:
+            
+            if i['instancia'] == j.idI:
+                configuracion_id = j.idC
+        
+        for j in cfgs1:
+            if configuracion_id == j.id:
+                recursos = j.recursos
+                
+                cstconfig = 0
+
+                for k in recursos:
+                    id = k['IdRec']
+                    cantidad = k['Cantidad']
+  
+                    for m in Rec:
+                        if m.id == id:
+                            costh =  m.costo
+
+                    vlr =   float(costh) * int(cantidad)
+                    cstconfig = cstconfig + vlr
+
+        
+        csttot =  cstconfig * float(tiempo)
+        datos ={
+            'costo_consumo':round(csttot,4),
+            'fecha_hora':fecha_hora
+        }
+        consumo_ind ={
+            'tiempo': tiempo,
+            'costo':round(csttot,4)
+        }
+        cst.append(datos)
+        consin.append(consumo_ind)
+        
+        
+    
+    for datos in cst:
+        costo = datos['costo_consumo']
+        cost = cost + costo
+        fecha_final_consumo = str(datos['fecha_hora'])
+        
+        
+    Dato = {
+        'Nombre': nombre,
+        'Nit':nit2,
+        'Monto':round(cost,4),
+        'Fecha ':fecha_final_consumo,
+        'consumo':consin
+    }
+    respuesta = jsonify(Dato)
+    return (respuesta)
 
 
 
